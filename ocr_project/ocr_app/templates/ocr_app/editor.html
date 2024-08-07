@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Editor</title>
+    <style>
+        .word {
+            display: inline-block;
+            margin: 2px;
+            padding: 5px;
+            border: 1px solid black;
+            cursor: move;
+        }
+    </style>
+    <script>
+        function allowDrop(ev) {
+            ev.preventDefault();
+        }
+        function drag(ev) {
+            ev.dataTransfer.setData("text", ev.target.id);
+        }
+        function drop(ev) {
+            ev.preventDefault();
+            var data = ev.dataTransfer.getData("text");
+            ev.target.appendChild(document.getElementById(data));
+        }
+    </script>
+</head>
+<body>
+    <h1>Editor</h1>
+    <form method="post" action="{% url 'generate_txt' %}">
+        {% csrf_token %}
+        <input type="hidden" name="layout" value="Tipo do registro NFS|Cód, espécie|CNPJ cliente padrão|PE|Cód. acumulador|Série|Numero doc||Doc final|Data serviço|Data emissão|valor contábil|||||||||CFPS|||||Cod SCP|||Valor serviço|||| Parcela NFS|Data|Valor|||||||||||||||||||">
+        <div>
+            {% for word in words %}
+                <span class="word" id="word{{ forloop.counter }}" draggable="true" ondragstart="drag(event)">{{ word }}</span>
+            {% endfor %}
+        </div>
+        <div id="output" ondrop="drop(event)" ondragover="allowDrop(event)" style="margin-top: 20px; border: 1px solid black; padding: 10px; min-height: 100px;">
+            <!-- Layout será exibido aqui -->
+        </div>
+        <button type="submit">Gerar</button>
+    </form>
+</body>
+</html>
